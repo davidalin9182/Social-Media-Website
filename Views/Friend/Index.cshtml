@@ -1,0 +1,152 @@
+﻿@using Social_Media_Website.ViewModels
+@using Social_Media_Website.Models
+@using System.Security.Claims
+
+@model IEnumerable<Social_Media_Website.Models.AppUser>
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>FollowBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+
+
+<section class="users-page-main">
+    <div class="users-search-bar">
+        <form asp-action="Index" method="get">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search..." name="searchTerm" id="searchInput">
+
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+
+            </div>
+        </form>
+        <div id="suggestions" class="search-suggestions" style="display: none;"></div>
+    </div>
+
+    <div class="users--page-title">
+        <h3>Currently Following :</h3>
+    </div>
+
+
+    <div class="users-content">
+
+        @foreach (var friend in Model)
+        {
+
+        <div id="@friend.Id" class="user-item">
+            <div class="user-item-content">
+                <div class="user-item-profile-image">
+                        @if (friend.ProfileImageUrl != null)
+                        {
+                            <img src="@friend.ProfileImageUrl" alt=" ">
+                        }
+                        else
+                        {
+                              <img src="/images/default_avatar.png" alt=" ">
+                        }
+
+                       
+                </div>
+                <div class="user-item-name">
+                    <h3>@friend.UserName</h3>
+                </div>
+                <div class="user-item-email">
+                    <h4>@friend.UserName</h4>
+                </div>
+                    @{
+                        var city = friend.City == null ? "" : friend.City.ToString();
+                        var country = friend.Country == null ? "" : friend.Country.ToString();
+                    }
+                <div class="user-item-location">
+                    <h4>@friend.City, @friend.Country</h4>
+                </div>
+                <div class="user-item-buttons">
+                    <div class="user-item-buttons-follow">
+
+                                <form asp-controller="Friend" class="message-us" asp-action="RemoveFriend" method="post">
+                                    <input type="hidden" name="friendId" value="@friend.Id" />
+                                    @*<button type="submit">Unfollow</button>*@
+                                     <a href="#" onclick="event.preventDefault(); this.closest('form').submit();">Unfollow</a>
+                                </form>
+                        
+
+                    </div>
+                    <div class="user-item-buttons-message">
+                        <a asp-controller="Conversation" asp-action="StartConversation" asp-route-userId="@friend.Id">Message</a>
+                    </div>
+
+                </div>
+            </div>
+            <div class="user-item-view-profile">
+                  <a asp-controller="User" asp-action="Detail" asp-route-id="@friend.Id">View Profile</a>
+            </div>
+
+        </div>
+
+        }
+
+      
+
+
+    </div>
+
+
+</section>
+
+
+
+
+
+<script>
+    //$(document).ready(function () {
+    //    var searchTermInput = $('#searchInput');
+    //    var suggestionsDiv = $('#suggestions');
+
+    //    searchTermInput.on('input', function () {
+    //        var term = searchTermInput.val();
+    //        if (term.length >= 3) {
+    //            var encodedTerm = encodeURIComponent(term); // Encode the search term
+
+    //            $.ajax({
+    //                type: 'GET',
+    //                url: '/User/TypeAheadFriends', // Updated URL
+    //                data: { term: encodedTerm }, // Use the encoded search term
+    //                success: function (suggestions) {
+    //                    if (suggestions.length > 0) {
+    //                        suggestionsDiv.html('');
+    //                        suggestions.forEach(function (suggestion) {
+    //                            var suggestionLink = $('<a href="#"></a>').text(suggestion);
+    //                            suggestionLink.on('click', function (event) {
+    //                                event.preventDefault();
+    //                                searchTermInput.val(suggestion);
+    //                                suggestionsDiv.hide();
+    //                                $('#search-form').submit();
+    //                            });
+    //                            var suggestionItem = $('<div></div>').append(suggestionLink);
+    //                            suggestionsDiv.append(suggestionItem);
+    //                        });
+    //                        suggestionsDiv.show();
+    //                    } else {
+    //                        suggestionsDiv.hide();
+    //                    }
+    //                },
+    //                error: function () {
+    //                    suggestionsDiv.hide();
+    //                }
+    //            });
+    //        } else {
+    //            suggestionsDiv.hide();
+    //        }
+    //    });
+    //});
+
+
+</script>

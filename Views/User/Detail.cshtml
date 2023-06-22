@@ -1,0 +1,395 @@
+﻿@using Social_Media_Website.ViewModels
+@using Microsoft.AspNetCore.Identity
+@using Social_Media_Website.Models
+
+@model UserDetailViewModel
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>FollowBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+</head>
+
+
+<section class="post-and-profile">
+
+    <div class="profile-back-button"><a asp-controller="Users" asp-action="Index"><i class="fa fa-arrow-left" aria-hidden="true"></i></a><p>@Model.UserName</p>  </div>
+    <section class="main-profile">
+
+        <div class="profile-info">
+            <div class="profile-cover">
+                <div class="profile-cover-change-image">
+                    <input type="file" id="cover-image-file" style="display: none;">
+                  @*  <button type="button" id="change-cover-image">Change Image</button>*@
+
+                </div>
+                <img src="@Model.CoverUrl" alt="" id="cover-image">
+
+            </div>
+            <div class="image-followers">
+                <div class="profile-image">
+                    <img src="@Model.ProfileImageUrl" alt="" id="profile-image">
+                    <div class="add-dp " id="OpenImgUpload">
+                        <input type="file" id="profile-image-file" style="display: none;">
+                      @*  <button type="button" id="change-profile-image" class="image-camera-profile" for="profile_image_file"> <i class="fa-sharp fa-solid fa-camera"></i></button>*@
+                    </div>
+                </div>
+
+
+
+                <div class="detail-user-item-buttons-follow">
+                
+                        @if(Model.IsFriend == true){
+                            <div class="user-item-buttons-follow float-right">
+                           
+                                <form asp-controller="Friend" class="message-us" asp-action="RemoveFriend" method="post">
+                                    <input type="hidden" name="friendId" value="@Model.Id" />
+                                    <input type="hidden" name="friendUsername" value="@Model.UserName" />
+                                     <a href="#" onclick="this.closest('form').submit(); return false;">Unfollow</a>
+                                
+                                </form>
+                            </div>
+                          
+                            
+                          
+                        }
+                        else if(Model.IsFriend ==false){
+                           @* <a class="edit-profile-button" href="@Url.Action("AddFriend", "Friend", new { friendId = Model.Id })" title="">Follow</a>*@
+                        <div class="user-item-buttons-follow float-right">
+                            <form asp-controller="Friend" class="message-us" asp-action="AddFriend" method="post">
+                                <input type="hidden" name="friendId" value="@Model.Id" />
+                                <input type="hidden" name="friendUsername" value="@Model.UserName" />
+                                <a href="#" onclick="this.closest('form').submit(); return false;">Follow</a>
+                            </form>
+                        </div>
+
+
+                         }
+                       
+                       
+                     
+                </div>
+
+
+            </div>
+            <div class="profile-name">
+                <h3>@Model.UserName</h3>
+                <h5>@Model.UserName</h5>
+
+            </div>
+
+            <div class="profile-short-description">
+                <p>
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
+                    when an unknown printer took a galley of type and scrambled it to make a type
+                    specimen book.
+                </p>
+            </div>
+
+            <div class="profile-followers-location">
+                <div class="location-creation-date">
+                    <div class="profile-city-country">
+                        <img class="location-icon" src="/images/location_icon.png" />
+                        <div>@Model.City,</div>
+                        <div> @Model.Country</div>
+
+                    </div>
+                    <div class="creation-date">
+                        <img src="~/images/calendar_icon.png" />
+                        <p>@Model.CreationDate.ToString("dd MMMM yyyy")</p>
+                    </div>
+
+                </div>
+                <div class="profile-followers">
+                    <b>@Model.FollowersCount</b>
+                    <span>Followers</span>
+                    <b class="following-number">@Model.FollowingCount</b>
+                    <span>Following</span>
+
+
+                </div>
+
+
+
+                <div class="profile-post-section-top">
+                    <a>Posts</a>
+                    <a>Following</a>
+
+                </div>
+            </div>
+        </div>
+
+
+    </section>
+    <section class="profile-post-section">
+
+        @foreach (var item in Model.Posts)
+        {
+            <div class="profile-post-item">
+                <a type="button"><img class="post-profile-image" src="@Model.ProfileImageUrl" /></a>
+                <div class="post-main">
+                    <div class="post-top-bar">
+
+                        <a type="button">@Model.UserName</a>
+
+                        <div class="post-email-date">
+
+                            <h5>. @item.DateCreated.ToString("MMMM dd - HH:mm tt")</h5>
+                        </div>
+                        @*<div class="post-edit-delete">
+                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                        </div>*@
+
+                    </div>
+                    <h2>@item.PostTitle</h2>
+                    <p>
+                        @item.PostContent
+                    </p>
+                    <div class="post-image-reactions">
+
+                        <div class="post-content-image">
+                            <img src="@item.Image" />
+                        </div>
+                        <div class="post-bottom-bar">
+                            <div class="comments">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <button type="button" class="show-comments-button" data-postId="@item.Id">
+                                        <img src="/images/icon_comment.png" />
+                                    </button>
+                                }
+                                else
+                                {
+                                    <a type="button" asp-controller="Account" asp-action="Login" class="not-logged-in-comment">
+                                        <img src="/images/icon_comment.png" />
+                                    </a>
+
+                                }
+                                <div>@item.CommentsCount</div>
+                            </div>
+                            <div class="likes">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <form method="post" asp-controller="Posts" asp-action="LikePost" asp-route-postId="@item.Id">
+
+                                        @if (item.IsLikedByCurrentUser == true)
+                                        {
+                                            <button type="submit" class="unlike-button">
+                                                <i class="fa-solid fa-heart"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" class="like-button">
+                                                <i class="fa-solid fa-heart"></i>
+                                            </button>
+                                        }
+
+                                    </form>
+                                }
+                                else
+                                {
+
+                                    <a type="button" asp-controller="Account" asp-action="Login" class="not-logged-in">
+                                        <i class="fa-solid fa-heart"></i>
+                                    </a>
+                                }
+                                <div>@item.LikesCount</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comment-section-container" id="comment-section-container-@item.Id" style="display: none;">
+                        <!-- Comment section partial will be displayed here -->
+                    </div>
+
+                    <div id="comment-post-container-@item.Id" class="comment-post-container" style="display: none;">
+                        <!-- Comment form will be displayed here -->
+                    </div>
+                </div>
+
+
+            </div>
+        }
+
+    </section>
+</section>
+
+<div class="side-wrapper">
+    <section class="side-home">
+        <div class="sugestions-title">
+            Popular Users:
+        </div>
+
+
+        <div class="sugestions-content" id="popular-users">
+        </div>
+        <div class="side-show-more">
+
+            <a type="button" asp-area="" asp-controller="User" asp-action="Index">Go to users page</a>
+        </div>
+    </section>
+
+    <section class="side-profile">
+        <div class="sugestions-title">
+            Suggestions
+        </div>
+
+
+        <div class="sugestions-content">
+            @foreach (var item in Model.SuggestedUsers)
+            {
+                <div class="sugestions-item">
+                    @if (item.ProfileImageUrl == null)
+                    {
+                        <img src="/images/default_avatar.png" />
+                    }
+                    else
+                    {
+                        <img src="@item.ProfileImageUrl" />
+                    }
+
+                    <div class="sugestions-item-name">
+                        <h3>@item.UserName</h3>
+                        <h5>@item.Email</h5>
+                    </div>
+                    <div type="button" class="sugestions-follow-button">
+
+                        <a asp-controller="User" asp-action="Detail" asp-route-id="@item.Id">View</a>
+                    </div>
+                </div>
+            }
+
+
+
+        </div>
+        <div class="side-show-more">
+            <a type="button" asp-area="" asp-controller="User" asp-action="Index">Go to users page</a>
+        </div>
+    </section>
+
+</div>
+
+
+<script>
+      // Fetch suggested users from the server
+    function fetchSuggestedUsers() {
+        // Make an AJAX request to get the suggested users
+        $.ajax({
+            url: '/Posts/GetSuggestedUsers', // Adjust the URL if needed
+            method: 'GET',
+            success: function (data) {
+                // Render the partial view with the suggested users
+                $('#popular-users').html(data);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    // Call the fetchSuggestedUsers function to load the suggested users on page load
+    fetchSuggestedUsers();
+
+
+    $(document).ready(function () {
+        $(".show-comments-button").click(function () {
+            var postId = $(this).data("postid");
+            openCommentPostForm(postId);
+        });
+
+        $("body").on("submit", ".comment-form", function (e) {
+            e.preventDefault();
+            var postId = $(this).find("input[name='postId']").val();
+            submitCommentForm(postId);
+        });
+
+        function openCommentPostForm(postId) {
+            var commentPostContainer = $("#comment-post-container-" + postId);
+            var url = "/Posts/CreateComment?postId=" + postId;
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (response) {
+                    commentPostContainer.html(response);
+                    commentPostContainer.show();
+                    showComments(postId);
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        function showComments(postId) {
+            var commentSection = $("#comment-section-container-" + postId);
+
+            if (commentSection.is(":visible")) {
+                commentSection.hide();
+                $("#comment-post-container-" + postId).hide();
+            } else {
+                var url = "/Posts/GetCommentsForPost?postId=" + postId;
+
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    success: function (response) {
+                        commentSection.html(response);
+                        commentSection.show();
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            }
+        }
+
+
+        function submitCommentForm(postId) {
+            var commentForm = $(".comment-post-container[data-postid='" + postId + "'] .comment-form");
+            var formData = commentForm.serialize();
+
+            $.ajax({
+                url: "/Posts/CreateComment",
+                type: "POST",
+                data: formData,
+                success: function (response) {
+                    showComments(postId);
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+    });
+
+
+
+    // Fetch suggested users from the server
+    function fetchSuggestedUsers() {
+        // Make an AJAX request to get the suggested users
+        $.ajax({
+            url: '/Posts/GetSuggestedUsers', // Adjust the URL if needed
+            method: 'GET',
+            success: function (data) {
+                // Render the partial view with the suggested users
+                $('#popular-users').html(data);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    // Call the fetchSuggestedUsers function to load the suggested users on page load
+    fetchSuggestedUsers();
+
+</script>
+

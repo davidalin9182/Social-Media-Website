@@ -1,0 +1,73 @@
+﻿@using Social_Media_Website.ViewModels
+
+
+@model CreatePostsViewModel
+
+<head>
+    <meta charset="UTF-8">
+    <title>FollowBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+
+
+    <form method="post" enctype="multipart/form-data" asp-action="Create">
+        <div class="form-group-1">
+            <label for="postTitle">Post Title:</label>
+            <input type="text" id="postTitle" name="postTitle" class="form-control" maxlength="30" required>
+        </div>
+
+        <div class="form-group-1">
+            <label for="postContent">Post Content:</label>
+        <textarea id="postContent" name="postContent" maxlength="1000" class="form-control" required></textarea>
+        </div>
+
+
+ 
+        <div class="form-group-1">
+        <button id="selectButton2" class="add-image-button" type="button"><i class="fa-solid fa-image"></i><p>Add Photo</p></button>
+            <input type="file" id="selectFile" name="image" style="display: none;">
+        </div>
+        <div class="add-image-preview" id="imagePreviewContainer">
+            <img id="imagePreview" src="#" alt="">
+        </div>
+
+
+    
+      
+        <input type="hidden" name="appUserId" value="@Model.AppUserId" />
+        <input type="hidden" name="profileImageUrl" value="@Model.ProfileImageUrl" />
+        <input type="hidden" name="userName" value="@Model.UserName" />
+
+     <button type="submit" class="edit-profile-submit-button">Create</button>
+      
+    </form>
+
+
+<script>
+    const selectButton = document.getElementById('selectButton2');
+    const selectFileInput = document.getElementById('selectFile');
+    const imagePreview = document.getElementById('imagePreview');
+
+    selectButton.addEventListener('click', () => {
+        selectFileInput.click();
+    });
+
+    selectFileInput.addEventListener('change', (event) => {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imgSrc = e.target.result;
+                imagePreview.src = imgSrc;
+            };
+            reader.readAsDataURL(selectedFile);
+        }
+    });
+
+
+
+</script>

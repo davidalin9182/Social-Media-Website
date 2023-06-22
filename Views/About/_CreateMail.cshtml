@@ -1,0 +1,67 @@
+﻿@using Social_Media_Website.ViewModels
+
+@model CreatePostsViewModel
+
+<head>
+    <meta charset="UTF-8">
+    <title>FollowBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+</head>
+
+<form method="post" asp-action="CreateMail" enctype="multipart/form-data">
+    <input type="hidden" id="AppUserId" name="AppUserId" value="@Model.AppUserId" />
+    <input type="hidden" id="ProfileImageUrl" name="ProfileImageUrl" value="@Model.ProfileImageUrl" />
+    <input type="hidden" id="UserName" name="UserName" value="@Model.UserName" />
+
+    <div class="form-group-1">
+        <label asp-for="PostTitle">Subject:</label>
+        <input asp-for="PostTitle" class="form-control" placeholder="Enter subject...">
+        <span asp-validation-for="PostTitle" class="text danger"></span>
+    </div>
+    <div class="form-group-1">
+        <label asp-for="PostContent">Content:</label>
+        <textarea asp-for="PostContent" class="form-control" placeholder="Describe your problem/feedback..."></textarea>
+        <span asp-validation-for="PostContent" class="text danger"></span>
+    </div>
+    <div class="form-group-1">
+        <button id="selectButton" class="add-image-button" type="button"><i class="fa-solid fa-image"></i><p>Add Photo</p></button>
+        <input type="file" id="selectFile" name="image" style="display: none;">
+    </div>
+    <div class="add-image-preview" id="imagePreviewContainer">
+        <img id="imagePreview" src="#" alt="">
+    </div>
+
+
+
+    <button type="submit" class="edit-profile-submit-button">Send</button>
+</form>
+
+
+<script>
+    const selectButton = document.getElementById('selectButton');
+    const selectFileInput = document.getElementById('selectFile');
+    const imagePreview = document.getElementById('imagePreview');
+
+    selectButton.addEventListener('click', () => {
+        selectFileInput.click();
+    });
+
+    selectFileInput.addEventListener('change', (event) => {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imgSrc = e.target.result;
+                imagePreview.src = imgSrc;
+            };
+            reader.readAsDataURL(selectedFile);
+        }
+    });
+
+
+
+</script>

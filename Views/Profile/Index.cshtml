@@ -1,0 +1,707 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Social_Media_Website.Models
+@using Social_Media_Website.ViewModels
+@using X.PagedList
+@inject SignInManager<AppUser> SignInManager
+@model ProfileViewModel
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>FollowBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+
+
+
+<section class="post-and-profile">
+ 
+    <div class="profile-back-button"><a  asp-controller="Posts" asp-action="Index"><i class="fa fa-arrow-left" aria-hidden="true"></i></a><p>@Model.UserName</p></div>
+    <section class="main-profile">
+        
+        <div class="profile-info">
+            <div class="profile-cover">
+                <div class="profile-cover-change-image">
+                    <input type="file" id="cover-image-file" style="display: none;">
+                    <button type="button" id="change-cover-image">Change Image</button>
+
+                </div>
+                <img src="@Model.CoverUrl" alt="" id="cover-image">
+
+            </div>
+            <div class="image-followers">
+                <div class="profile-image">
+                    <img src="@Model.ProfileImageUrl" alt="" id="profile-image">
+                    <div class="add-dp " id="OpenImgUpload">
+                        <input type="file" id="profile-image-file" style="display: none;">
+                        <button type="button" id="change-profile-image" class="image-camera-profile" for="profile_image_file"> <i class="fa-sharp fa-solid fa-camera"></i></button>
+                    </div>
+                </div>
+
+
+
+                <div class="edit-profile">
+                    <button class="edit-profile-button" id="edit-profile-button">Edit Profile</button>
+                </div>
+                
+                
+            </div>
+             <div class="profile-name">
+                        <h3>@Model.UserName</h3>
+                        <h5>@Model.Email</h5>
+              
+             </div>
+           
+            <div class="profile-short-description">
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
+                    when an unknown printer took a galley of type and scrambled it to make a type
+                    specimen book.</p>
+            </div>
+           
+                <div class="profile-followers-location">
+                <div class="location-creation-date">
+                    <div class="profile-city-country">
+                        <img class="location-icon" src="/images/location_icon.png" />
+                        <div>@Model.City,</div>
+                        <div> @Model.Country</div>
+
+                    </div>
+                    <div class="creation-date">
+                        <img src="~/images/calendar_icon.png" />
+                        <p>@Model.CreationDate.ToString("dd MMMM yyyy")</p>
+                    </div>
+
+                </div>
+                    <div class="profile-followers">
+                        <b>@Model.FollowersCount</b>
+                        <span>Followers</span>
+                        <b class="following-number">@Model.FollowingCount</b>
+                        <span>Following</span>
+
+
+                    </div>
+
+
+
+                    <div class="profile-post-section-top">
+                         <a class="show-profile-posts-button">Posts</a>
+                         <a class="show-partial-button">Following</a>
+                       
+                    </div>
+                </div>
+            </div>
+
+     
+    </section>
+
+    
+
+    <div class="modal-overlay"></div>
+
+    <div class="modal-content" id="edit-profile-container"></div>
+
+    <section class="profile-post-section">
+        <div class="profile-posts-content">
+
+       
+     @foreach (var item in Model.Posts)
+     {
+        <div class="profile-post-item">
+          <a type="button"><img class="post-profile-image" src="@Model.ProfileImageUrl" /></a>
+          <div class="post-main">
+             <div class="post-top-bar">
+                
+                <a type="button">@Model.UserName</a>
+
+                <div class="post-email-date">
+                @*    <h4>@Model.UserName</h4>*@
+                    <h5>. @item.DateCreated.ToString("MMMM dd - HH:mm tt")</h5>
+                </div>
+                <div class="post-edit-delete">
+                    <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                        <div class="dropdown">
+                            <ul>
+                             
+                                    <li>
+                                        <button type="button" class="btn btn-sm btn-outline-info edit-post-button" data-post-id="@item.Id">
+                                            <i class="fa-solid fa-pen-to-square"></i><p>Edit</p>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="btn btn-sm btn-outline-info delete-post-button" data-post-id="@item.Id">
+                                            <i class="fa-solid fa-trash"></i><p>Delete</p>
+                                        </button>
+                                    </li>
+
+                            </ul>
+                        </div>
+                </div>
+
+            </div>
+            <h2>@item.PostTitle</h2>
+            <p>
+                @item.PostContent
+            </p>
+                    <div class="post-image-reactions">
+
+                        @if (item.Image != null)
+                        {
+                            <div class="post-content-image">
+                                <img src="@item.Image" />
+                            </div>
+
+                        }
+                        else
+                        {
+                           
+                        }
+                        <div class="post-bottom-bar">
+                            <div class="comments">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <button type="button" class="show-comments-button" data-postId="@item.Id">
+                                        <img src="/images/icon_comment.png" />
+                                    </button>
+                                }
+                                else
+                                {
+                                    <a type="button" asp-controller="Account" asp-action="Login" class="not-logged-in-comment">
+                                        <img src="/images/icon_comment.png" />
+                                    </a>
+
+                                }
+                                <div>@item.CommentsCount</div>
+                            </div>
+                            <div class="likes">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                 <form method="post" asp-controller="Profile" asp-action="LikePost" asp-route-postId="@item.Id">
+
+                                        @if (item.IsLikedByCurrentUser == true)
+                                        {
+                                            <button type="submit" class="unlike-button">
+                                                <i class="fa-solid fa-heart"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" class="like-button">
+                                                <i class="fa-solid fa-heart"></i>
+                                            </button>
+                                        }
+
+                                    </form>
+                                }
+                                else
+                                {
+
+                                    <a type="button" asp-controller="Account" asp-action="Login" class="not-logged-in">
+                                        <i class="fa-solid fa-heart"></i>
+                                    </a>
+                                }
+                                <div>@item.LikesCount</div>
+                            </div>
+
+
+
+                        </div>
+                     
+
+                    </div>
+
+                    <div class="comment-section-container" id="comment-section-container-@item.Id" style="display: none;">
+                        <!-- Comment section partial will be displayed here -->
+                    </div>
+
+                    <div id="comment-post-container-@item.Id" class="comment-post-container" style="display: none;">
+                        <!-- Comment form will be displayed here -->
+                    </div>
+
+
+            </div>
+         
+          
+        </div>
+      }
+      </div>
+        <div class="followed-posts-partial-container" id="followed-posts-partial-container"></div>
+    </section>
+    <div id="edit-post-container" class="edit-post-modal-content">
+        <!-- This container will hold the content of the edit post form partial view -->
+    </div>
+
+    <div id="delete-post-container" class="edit-post-modal-content">
+        <!-- This container will hold the content of the delete post form partial view -->
+    </div>
+  
+</section>
+
+<div class="side-wrapper">
+    <section class="side-home">
+    <div class="sugestions-title">
+        Popular Users:
+    </div>
+
+
+    <div class="sugestions-content" id="popular-users">
+  
+  
+    </div>
+    <div class="side-show-more">
+     
+     <a type="button" asp-area="" asp-controller="User" asp-action="Index">Go to users page</a>
+    </div>
+</section>
+
+    <section class="side-profile">
+        <div class="sugestions-title">
+             Suggestions
+        </div>
+   
+        
+        <div class="sugestions-content">
+        @foreach( var item in Model.SuggestedUsers)
+        {
+            <div class="sugestions-item">
+                @if(item.ProfileImageUrl == null)
+                {
+                    <img src="/images/default_avatar.png" />
+                }
+                else
+                {
+                    <img src="@item.ProfileImageUrl" />
+                }
+               
+                <div class="sugestions-item-name">
+                    <h3>@item.UserName</h3>
+                    <h5>@item.Email</h5>
+                </div>
+                <div type="button" class="sugestions-follow-button">
+                    
+                       <a asp-controller="User" asp-action="Detail" asp-route-id="@item.Id">View</a>
+                </div>
+            </div>
+        }
+      
+         
+          
+        </div>
+         <div class="side-show-more">
+           <a type="button" asp-area="" asp-controller="User" asp-action="Index">Go to users page</a>
+            </div>
+    </section>
+
+</div>
+
+
+  <script>
+
+    $(document).ready(function () {
+        // Attach a click event handler to the button
+        $('.show-partial-button').click(function () {
+            // Hide the existing content
+            $('.profile-posts-content').hide();
+
+            // Make an AJAX request to get the partial view
+            $.ajax({
+                url: '/Posts/FollowedPostsPartial', // Adjust the URL if needed
+                method: 'GET',
+                success: function (data) {
+                    // Render the partial view in the container
+                    $('#followed-posts-partial-container').html(data);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+        // Attach a click event handler to show the home post items again and hide the partial
+        $('.show-profile-posts-button').click(function () {
+            // Show the home post items
+            $('.profile-posts-content').show();
+
+            // Hide the partial view
+            $('#followed-posts-partial-container').empty();
+        });
+    });
+
+
+
+    $(document).ready(function () {
+        var sections = document.querySelectorAll(".profile-post-section");
+
+        sections.forEach(function (section) {
+            var icons = section.querySelectorAll(".post-edit-delete");
+
+            icons.forEach(function (icon) {
+                var dropdown = icon.querySelector(".dropdown");
+
+                icon.addEventListener("click", function () {
+                    dropdown.classList.toggle("dropdown-show");
+                });
+
+                // Close the dropdown when clicking outside of it
+                document.addEventListener("click", function (event) {
+                    var target = event.target;
+
+                    if (!icon.contains(target)) {
+                        dropdown.classList.remove("dropdown-show");
+                    }
+                });
+            });
+        });
+    });
+
+
+
+    $(document).ready(function () {
+        $(".profile-cover-change-image #change-cover-image").click(function () {
+            $(this).siblings("#cover-image-file").click();
+        });
+
+        $(".add-dp #change-profile-image").click(function () {
+            $(this).siblings("#profile-image-file").click();
+        });
+
+        $(".profile-cover-change-image #cover-image-file").change(function () {
+            var formData = new FormData();
+            formData.append("file", $(this)[0].files[0]);
+
+            $.ajax({
+                url: "/Profile/EditCoverImage",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $("#cover-image").attr("src", response);
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        });
+
+        $(".add-dp #profile-image-file").change(function () {
+            var formData = new FormData();
+            formData.append("file", $(this)[0].files[0]);
+
+            $.ajax({
+                url: "/Profile/EditProfileImage",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $("#profile-image").attr("src", response);
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+
+
+    $(document).ready(function () {
+        // Get a reference to the edit profile container element
+        var editProfileContainer = $("#edit-profile-container");
+
+        // Get a reference to the edit profile button
+        var editProfileButton = $("#edit-profile-button");
+
+        // Get a reference to the modal overlay
+        var modalOverlay = $(".modal-overlay");
+
+        // Function to open the edit profile form
+        function openEditProfileForm() {
+            // Show the modal overlay
+            modalOverlay.show();
+
+            // Make an AJAX request to fetch the edit profile form content (partial view)
+            $.ajax({
+                url: "/Profile/EditUserProfile",
+                type: "GET",
+                success: function (response) {
+                    // Replace the content of the edit profile container with the partial view HTML
+                    editProfileContainer.html(response);
+
+                    // Show the edit profile container
+                    editProfileContainer.show();
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        // Function to close the edit profile form
+        function closeEditProfileForm() {
+            // Hide the edit profile container
+            editProfileContainer.hide();
+
+            // Hide the modal overlay
+            modalOverlay.hide();
+        }
+
+        // Handle the click event of the edit profile button
+        editProfileButton.click(function () {
+            openEditProfileForm();
+        });
+
+        // Handle the click event of the modal overlay
+        modalOverlay.click(function (e) {
+            // Check if the click event target is the modal overlay itself (not its children)
+            if (e.target === this) {
+                closeEditProfileForm();
+            }
+        });
+
+        // Handle the click event of the close button
+        editProfileContainer.on("click", ".close", function () {
+            closeEditProfileForm();
+        });
+    });
+
+        $(document).ready(function () {
+            // Get a reference to the edit post container element
+            var editPostContainer = $("#edit-post-container");
+
+            // Get a reference to the delete post container element
+            var deletePostContainer = $("#delete-post-container");
+
+            // Get a reference to the edit post buttons
+            var editPostButtons = $(".edit-post-button");
+
+            // Get a reference to the delete post buttons
+            var deletePostButtons = $(".delete-post-button");
+
+            // Get a reference to the modal overlay
+            var modalOverlay = $(".modal-overlay");
+
+            // Function to open the edit post form
+            function openEditPostForm(postId) {
+                // Show the modal overlay
+                modalOverlay.show();
+
+                // Make an AJAX request to fetch the edit post form content (partial view)
+                $.ajax({
+                    url: "/Posts/Edit/" + postId,
+                    type: "GET",
+                    success: function (response) {
+                        // Replace the content of the edit post container with the partial view HTML
+                        editPostContainer.html(response);
+
+                        // Show the edit post container
+                        editPostContainer.show();
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+        function openDeletePostForm(postId) {
+            // Show the modal overlay
+            modalOverlay.show();
+
+            // Make an AJAX request to fetch the delete post form content (partial view)
+            $.ajax({
+                url: "/Posts/Delete/" + postId,
+                type: "GET",
+                success: function (response) {
+                    // Replace the content of the delete post container with the partial view HTML
+                    deletePostContainer.html(response);
+
+                    // Show the delete post container
+                    deletePostContainer.show();
+
+                    // Handle the cancel button click event
+                    deletePostContainer.find(".cancel-button").click(function () {
+                        // Close the delete post form
+                        closeDeletePostForm();
+                    });
+
+                    // Handle the form submission
+                    deletePostContainer.find("form").submit(function (e) {
+                        e.preventDefault(); // Prevent the default form submission
+
+                        var formData = $(this).serialize(); // Serialize the form data
+
+                        // Make an AJAX request to the delete action
+                        $.ajax({
+                            url: "/Posts/Delete/" + postId,
+                            type: "POST",
+                            data: formData,
+                            success: function () {
+                                // Handle the success response
+                                console.log("Post deleted successfully");
+                                // Optionally, you can perform additional actions here
+
+                                // Close the delete post form
+                                closeDeletePostForm();
+                                // Refresh the page
+                                location.reload();
+                            },
+                            error: function (xhr, status, error) {
+                                console.log(error);
+                                // Handle the error response here
+                            }
+                        });
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+
+            // Function to close the edit post form
+            function closeEditPostForm() {
+                // Hide the edit post container
+                editPostContainer.hide();
+
+                // Hide the modal overlay
+                modalOverlay.hide();
+            }
+
+            // Function to close the delete post form
+            function closeDeletePostForm() {
+                // Hide the delete post container
+                deletePostContainer.hide();
+
+                // Hide the modal overlay
+                modalOverlay.hide();
+            }
+
+            // Handle the click event of the edit post buttons
+            editPostButtons.click(function () {
+                var postId = $(this).data("post-id");
+                openEditPostForm(postId);
+            });
+
+            // Handle the click event of the delete post buttons
+            deletePostButtons.click(function () {
+                var postId = $(this).data("post-id");
+                openDeletePostForm(postId);
+            });
+
+            // Handle the click event of the modal overlay
+            modalOverlay.click(function (e) {
+                // Check if the target of the click event is the modal overlay itself(not any of its child elements)
+                if ($(e.target).hasClass("modal-overlay")) {
+                    closeEditPostForm();
+                    closeDeletePostForm();
+                }
+            });
+        });
+
+
+
+
+
+    $(document).ready(function () {
+        $(".show-comments-button").click(function () {
+            var postId = $(this).data("postid");
+            openCommentPostForm(postId);
+        });
+
+        $("body").on("submit", ".comment-form", function (e) {
+            e.preventDefault();
+            var postId = $(this).find("input[name='postId']").val();
+            submitCommentForm(postId);
+        });
+
+        function openCommentPostForm(postId) {
+            var commentPostContainer = $("#comment-post-container-" + postId);
+            var url = "/Posts/CreateComment?postId=" + postId;
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (response) {
+                    commentPostContainer.html(response);
+                    commentPostContainer.show();
+                    showComments(postId);
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        function showComments(postId) {
+            var commentSection = $("#comment-section-container-" + postId);
+
+            if (commentSection.is(":visible")) {
+                commentSection.hide();
+                $("#comment-post-container-" + postId).hide();
+            } else {
+                var url = "/Posts/GetCommentsForPost?postId=" + postId;
+
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    success: function (response) {
+                        commentSection.html(response);
+                        commentSection.show();
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            }
+        }
+                   
+
+        function submitCommentForm(postId) {
+            var commentForm = $(".comment-post-container[data-postid='" + postId + "'] .comment-form");
+            var formData = commentForm.serialize();
+
+            $.ajax({
+                url: "/Posts/CreateComment",
+                type: "POST",
+                data: formData,
+                success: function (response) {
+                    showComments(postId);
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+    });
+
+
+
+     // Fetch suggested users from the server
+    function fetchSuggestedUsers() {
+        // Make an AJAX request to get the suggested users
+        $.ajax({
+            url: '/Posts/GetSuggestedUsers', // Adjust the URL if needed
+            method: 'GET',
+            success: function (data) {
+                // Render the partial view with the suggested users
+                $('#popular-users').html(data);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    // Call the fetchSuggestedUsers function to load the suggested users on page load
+    fetchSuggestedUsers();
+
+
+
+
+</script>

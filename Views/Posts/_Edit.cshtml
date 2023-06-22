@@ -1,0 +1,73 @@
+﻿@using Social_Media_Website.ViewModels
+@model EditPostsViewModel
+
+<head>
+    <meta charset="UTF-8">
+    <title>FollowBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+<form method="post" asp-action="Edit"  enctype="multipart/form-data">
+     <input type="hidden" id="AppUserId" name="AppUserId" asp-for="AppUserId"/>
+     <input type="hidden" id="ProfileImageUrl" name="ProfileImageUrl" asp-for="ProfileImageUrl"/>
+     <input type="hidden" id="UserName" name="UserName" asp-for="UserName"/>
+    <input type="hidden" id="Image" name="Image" asp-for="URL" />
+    <div class="form-group-1">
+        <label asp-for="PostTitle">Title</label>
+        <input asp-for="PostTitle" class="form-control" placeholder="Title">
+        <span asp-validation-for="PostTitle" class="text-danger"></span>
+ </div>
+    <div class="form-group-1">
+        <label asp-for="PostContent">PostContent</label>
+       <textarea id="PostContent" asp-for="PostContent" name="postContent" maxlength="1000" placeholder="Description" class="form-control"></textarea>
+        <span asp-validation-for="PostContent" class="text-danger"></span>
+    </div>
+
+    <div class="form-group-1">
+        <button id="selectButton" class="add-image-button" type="button"><i class="fa-solid fa-image"></i><p>Add Photo</p></button>
+        <input type="file"  id="selectFile" name="image" style="display:none">
+    </div>
+    <div class="add-image-preview" id="imagePreviewContainer">
+        <img id="imagePreview" src="@Model.URL" alt="">
+    </div>
+   
+ 
+    <button type="submit" class="edit-profile-submit-button">Submit</button>
+</form>
+
+
+<script>
+    const selectButton = document.getElementById('selectButton');
+    const selectFileInput = document.getElementById('selectFile');
+    const imagePreview = document.getElementById('imagePreview');
+    const hiddenImageInput = document.getElementById('image');
+
+    selectButton.addEventListener('click', () => {
+        selectFileInput.click();
+    });
+
+    selectFileInput.addEventListener('change', (event) => {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imgSrc = e.target.result;
+                imagePreview.src = imgSrc;
+                hiddenImageInput.value = imgSrc;
+            };
+            reader.readAsDataURL(selectedFile);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const imageUrl = document.getElementById('imagePreview').src;
+        const hiddenImageInput = document.getElementById('Image');
+        hiddenImageInput.value = imageUrl;
+    });
+</script>
+
+
+

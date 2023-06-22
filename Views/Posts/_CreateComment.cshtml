@@ -1,0 +1,30 @@
+﻿@using Social_Media_Website.ViewModels
+
+
+@model CreateCommentViewModel
+
+<head>
+    <meta charset="UTF-8">
+    <title>FollowBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+
+
+<form method="post" enctype="multipart/form-data"  asp-action="CreateComment">
+
+    <div class="form-group-2">
+        <textarea id="commentContent" maxlength="1000" placeholder="Add a comment..." name="commentContent" class="form-control" required></textarea>
+    </div>
+  
+    <input type="hidden" name="postId" value="@Model.PostId" />
+    <input type="hidden" name="appUserId" value="@Model.AppUserId" />
+    <input type="hidden" name="profileImageUrl" value="@Model.ProfileImageUrl" />
+    <input type="hidden" name="userName" value="@Model.UserName" />
+   
+    <button type="submit" class="edit-profile-submit-button">Send</button>
+
+</form>

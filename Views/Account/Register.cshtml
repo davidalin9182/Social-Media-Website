@@ -1,0 +1,83 @@
+﻿@using Social_Media_Website.ViewModels
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+<head>
+    <meta charset="UTF-8">
+    <title>FollowBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+
+
+
+<section class="login-main-section">
+  
+
+    <div class="login-wrapper">
+        <section class="login-logo-section">
+            <img src="../images/followbook_logo.png" alt="">
+            <p>FollowBook, is a global social networking website which hopes to help people connect with others and keep in touch with thier loved ones</p>
+        </section>
+
+        <section class="login-form-section">
+            <div class="login-form-nav">
+                <a class="login-nav-active">Sign Up</a>
+                <a class="login-nav-inactive" asp-area="" asp-controller="Account" asp-action="Login">Sign In</a>
+            </div>
+            <div class="login-form-title">
+                <h3>Sign Up</h3>
+            </div>
+            @if (TempData["Error"] != null)
+            {
+                <div class="col-md-12 alert alert-danger">
+                    <span>@TempData["Error"]</span>
+                </div>
+            }
+            <form asp-action="Register">
+                <div class="row">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="col-lg-12 no-pdd">
+                        <div class="form-group">
+                            <div class="sn-field">
+                                <input asp-for="EmailAddress" class="form-control" maxlength="35" placeholder="Email" required type="email" />
+                                <i class="la la-user"></i>
+                            </div>
+                            <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 no-pdd">
+                        <div class="form-group">
+                            <div class="sn-field">
+                                <input asp-for="Password" class="form-control" placeholder="Password" required minlength="5" maxlength="25" />
+                                <i class="la la-lock"></i>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 no-pdd">
+                        <div class="form-group">
+                            <div class="sn-field">
+                                <input asp-for="ConfirmPassword" class="form-control" placeholder="ConfirmPassword" required minlength="5" maxlength="25" />
+                                <i class="la la-lock"></i>
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 no-pdd login-submit-button">
+                        <button type="submit" value="submit">Sign up</button>
+                    </div>
+                </div>
+            </form>
+
+
+
+        </section>
+    </div>
+
+
+</section>

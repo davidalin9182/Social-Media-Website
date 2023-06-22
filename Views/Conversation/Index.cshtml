@@ -1,0 +1,188 @@
+﻿@using Social_Media_Website.ViewModels
+@using Social_Media_Website.Models
+@using System.Security.Claims
+
+@model ConversationsViewModel
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>FollowBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+
+
+<div class="conversations-page-container">
+          <div class="conversation-container">
+            @foreach (var conversation in Model.Conversations)
+            {
+
+                @if (Model.UserDict2[conversation.User2Id].UserName != User.Identity.Name)
+                {
+                    <div class="conversation-container-element">
+
+                
+                        <button type="button" data-conversation-id="@conversation.Id" class="btn btn-danger delete-conversation">Delete</button>
+                        <button class="btn btn-link load-conversation-btn" data-conversation-id="@conversation.Id" id="load-conversation-btn-@conversation.Id">
+                            <div class="container-conversations">
+                                <div class="usr-msg-details">
+                                    <div class="usr-ms-img">
+                                    @if (@Model.UserDict2[conversation.User2Id].ProfileImageUrl != null)
+                                    {
+                                        <img src="@Model.UserDict2[conversation.User2Id].ProfileImageUrl" alt="">
+                                    }
+                                    else
+                                    {
+                                        <a type="button"> <img src="/images/default_avatar.png" alt=" "></a>
+                                    }
+
+                                        <span class="msg-status"></span>
+                                    </div>
+                                    <div class="usr-mg-info">
+                                        <h3>@Model.UserDict2[conversation.User2Id].UserName</h3>
+                                        <p>@conversation.LastActivity</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </button>
+                        <button id="btn-load-conversation-@conversation.Id" data-conversation-id="@conversation.Id" class="btn-load-conversation" style="display:none;"></button>
+
+
+
+                   
+                 
+                    </div>
+                }
+                else
+                {
+
+                    <div class="conversation-container-element">
+                        <button type="button" data-conversation-id="@conversation.Id" class="btn btn-danger delete-conversation">Delete</button>
+                        <button class="btn btn-link load-conversation-btn" data-conversation-id="@conversation.Id" id="load-conversation-btn-@conversation.Id">
+                            <div class="container-conversations">
+                                <div class="usr-msg-details">
+                                    <div class="usr-ms-img">
+                                    @if (@Model.UserDict1[conversation.User1.Id].ProfileImageUrl != null)
+                                    {
+                                        <a type="button"> <img src="@Model.UserDict1[conversation.User1.Id].ProfileImageUrl" alt=""></a>
+                                    }
+                                    else
+                                    {
+                                        <a type="button"> <img src="/images/default_avatar.png" alt=" "></a>
+                                    }
+                                      
+                                        <span class="msg-status"></span>
+                                    </div>
+                                    <div class="usr-mg-info">
+                                        <h3>@Model.UserDict1[conversation.User1.Id].UserName</h3>
+                                        <p>@conversation.LastActivity</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </button>
+                        <button id="btn-load-conversation-@conversation.Id" data-conversation-id="@conversation.Id" class="btn-load-conversation" style="display:none;"></button>
+
+        
+
+                       
+                   </div>
+                  
+
+                }
+
+
+            }
+
+            
+        </div>
+</div>
+    <div class="message-coinatiner-wrapper">
+        @foreach (var conversation in Model.Conversations)
+        {
+          <div class="message-container" id="conversation-messages-@conversation.Id"></div>
+        }
+      
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('.load-conversation-btn').click(function () {
+            var conversationId = $(this).data('conversation-id');
+            var url = '/Conversation/ConversationPartial?conversationId=' + conversationId;
+
+            if ($('.load-conversation-btn.conversation-opened').length > 0) {
+                // Conversation box is already open, don't do anything
+                window.location.replace(window.location.href);
+                //alert('A conversation is already open');
+                return;
+            }
+            // Hide all message containers except the one for this conversation
+            $('.message-container').hide();
+
+            // Fade in the conversation window
+            $('#conversation-messages-' + conversationId).css('opacity', 0.5).show().animate({ opacity: 1 });
+
+            // Check if the conversation messages have already been loaded
+            if ($('#conversation-messages-' + conversationId).html().trim().length === 0) {
+                // Load the conversation messages using the hidden button and its click event
+                $('#btn-load-conversation-' + conversationId).click();
+            }
+
+            // Add the 'conversation-opened' class to the button
+            $(this).addClass('conversation-opened');
+        });
+
+        $('.btn-load-conversation').click(function () {
+            var conversationId = $(this).data('conversation-id');
+            var url = '/Conversation/ConversationPartial?conversationId=' + conversationId;
+
+            $('#conversation-messages-' + conversationId).load(url);
+        });
+    });
+
+
+
+    $(document).ready(function () {
+        $('.delete-conversation').click(function () {
+            var conversationId = $(this).data('conversation-id');
+            if (confirm('Are you sure you want to delete this conversation?')) {
+                $.ajax({
+                    url: '@Url.Action("DeleteConversation", "Conversation")',
+                    type: 'POST',
+                    data: { conversationId: conversationId },
+                    success: function (result) {
+                        // Reload the current page
+                        location.reload();
+
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle error
+                        console.log(xhr.responseText);
+                    }
+                });
+            }
+        });
+    });
+
+
+
+</script>

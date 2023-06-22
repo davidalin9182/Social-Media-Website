@@ -1,0 +1,405 @@
+﻿@using Social_Media_Website.Models
+@using Social_Media_Website.ViewModels
+@using X.PagedList
+
+@model List<PostsViewModel>
+
+
+
+<head>
+	<meta charset="UTF-8">
+	<title>FollowBook</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<link rel="stylesheet" href="~/css/site.css" />
+
+</head>
+
+
+<section class="home-post-section">
+    <div class="home-post-top">
+        <div class="home-post-section-title">
+            <h3>Home</h3>
+
+        </div>
+        <div class="home-post-section-top">
+            <a class="show-home-posts-button">Posts</a>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a class="show-partial-button">Following</a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login" class="not-logged-in-followed">Following</a>
+            }
+
+        </div>
+    </div>
+   
+  
+    <div class="home-posts-content">
+
+    @foreach (var item in Model)
+    {
+    <div class="home-post-item">
+
+         <a type="button"><img class="post-profile-image" src="@item.ProfileImageUrl" /></a>
+        <div class="post-main">
+            <div class="post-top-bar">
+
+                <a type="button">@item.UserName</a>
+
+                <div class="post-email-date">
+                   @* <h4>@item.UserName</h4>*@
+                    <h5>. @item.DateCreated.ToString("MMMM dd - HH:mm tt")</h5>
+                </div>
+                @if (User.IsInRole("admin"))
+                {
+                    <div class="post-edit-delete">
+
+                        <button type="button" class="btn-admin-delete delete-post-button" data-post-id="@item.Id">
+                            <p>Delete</p>
+                        </button>
+
+
+
+                    </div>
+
+                }
+             
+
+            </div>
+            <h2>@item.PostTitle</h2>
+            <p>
+                @item.PostContent
+            </p>
+            <div class="post-image-reactions">
+                    @if (item.Image != null)
+                    {
+                        <div class="post-content-image">
+                            <img src="@item.Image" />
+                        </div>
+
+                    }
+                    else
+                    {
+
+                    }
+                <div class="post-bottom-bar">
+                    <div class="comments">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <button type="button" class="show-comments-button" data-postId="@item.Id">
+                                    <img src="/images/icon_comment.png" />
+                                </button>
+                            }
+                            else
+                            {
+                                 <a type="button"  asp-controller="Account" asp-action="Login" class="not-logged-in-comment">
+                                  <img src="/images/icon_comment.png" />
+                               </a>
+                                 
+                            }
+                            <div>@item.CommentsCount</div>
+                    </div>
+                    <div class="likes">
+                       @if (User.Identity.IsAuthenticated)
+                       {
+                          <form method="post" asp-controller="Posts" asp-action="LikePost" asp-route-postId="@item.Id">
+                        
+                            @if (item.IsLikedByCurrentUser == true)
+                            {
+                               <button type="submit" class="unlike-button">
+                               <i class="fa-solid fa-heart"></i>
+                               </button>
+                            }
+                            else
+                            {
+                              <button type="submit" class="like-button">
+                              <i class="fa-solid fa-heart"></i>
+                               </button>
+                            }
+                         
+                            </form>
+                        }
+                        else
+                        {
+                               
+                               <a type="button"  asp-controller="Account" asp-action="Login" class="not-logged-in">
+                                 <i class="fa-solid fa-heart"></i>
+                               </a>
+                        }
+                        <div>@item.LikesCount</div>
+                    </div>
+                      
+
+
+                </div>
+
+            </div>
+                <div class="comment-section-container" id="comment-section-container-@item.Id" style="display: none;">
+                    <!-- Comment section partial will be displayed here -->
+                </div>
+
+                <div id="comment-post-container-@item.Id" class="comment-post-container" style="display: none;">
+                    <!-- Comment form will be displayed here -->
+                </div>
+               
+        </div>
+
+
+    </div>
+   
+
+    }
+    </div>
+    <div class="followed-posts-partial-container" id="followed-posts-partial-container"></div>
+</section>
+<div id="edit-post-container" class="edit-post-modal-content">
+    <!-- This container will hold the content of the edit post form partial view -->
+</div>
+
+<div id="delete-post-container" class="edit-post-modal-content">
+    <!-- This container will hold the content of the delete post form partial view -->
+</div>
+
+<section class="side-home">
+    <div class="sugestions-title">
+        Popular Users:
+    </div>
+
+
+    <div class="sugestions-content" id="popular-users">
+  
+  
+    </div>
+    <div class="side-show-more">
+        <a type ="button" asp-controller="Account" asp-action="Login">Go to users page</a>
+     
+    </div>
+</section>
+
+
+
+
+<script>
+
+    $(document).ready(function () {
+        // Get a reference to the delete post container element
+        var deletePostContainer = $("#delete-post-container");
+
+        // Get a reference to the delete post buttons
+        var deletePostButtons = $(".delete-post-button");
+
+        // Get a reference to the modal overlay
+        var modalOverlay = $(".modal-overlay");
+
+        // Function to open the delete post form
+        function openDeletePostForm(postId) {
+            // Show the modal overlay
+            modalOverlay.show();
+
+            // Make an AJAX request to fetch the delete post form content (partial view)
+            $.ajax({
+                url: "/Posts/Delete/" + postId,
+                type: "GET",
+                success: function (response) {
+                    // Replace the content of the delete post container with the partial view HTML
+                    deletePostContainer.html(response);
+
+                    // Show the delete post container
+                    deletePostContainer.show();
+
+                    // Handle the cancel button click event
+                    deletePostContainer.find(".cancel-button").click(function () {
+                        // Close the delete post form
+                        closeDeletePostForm();
+                    });
+
+                    // Handle the form submission
+                    deletePostContainer.find("form").submit(function (e) {
+                        e.preventDefault(); // Prevent the default form submission
+
+                        var formData = $(this).serialize(); // Serialize the form data
+
+                        // Make an AJAX request to the delete action
+                        $.ajax({
+                            url: "/Posts/Delete/" + postId,
+                            type: "POST",
+                            data: formData,
+                            success: function () {
+                                // Handle the success response
+                                console.log("Post deleted successfully");
+                                // Optionally, you can perform additional actions here
+
+                                // Close the delete post form
+                                closeDeletePostForm();
+                                // Refresh the page
+                                location.reload();
+                            },
+                            error: function (xhr, status, error) {
+                                console.log(error);
+                                // Handle the error response here
+                            }
+                        });
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        // Function to close the delete post form
+        function closeDeletePostForm() {
+            // Hide the delete post container
+            deletePostContainer.hide();
+
+            // Hide the modal overlay
+            modalOverlay.hide();
+        }
+
+        // Handle the click event of the delete post buttons
+        deletePostButtons.click(function () {
+            var postId = $(this).data("post-id");
+            openDeletePostForm(postId);
+        });
+
+        // Handle the click event of the modal overlay
+        modalOverlay.click(function (e) {
+            // Check if the target of the click event is the modal overlay itself (not any of its child elements)
+            if ($(e.target).hasClass("modal-overlay")) {
+                closeDeletePostForm();
+            }
+        });
+    });
+
+    $(document).ready(function () {
+    // Attach a click event handler to the button
+    $('.show-partial-button').click(function () {
+        // Hide the existing content
+        $('.home-posts-content').hide();
+
+        // Make an AJAX request to get the partial view
+        $.ajax({
+                url: '/Posts/FollowedPostsPartial', // Adjust the URL if needed
+            method: 'GET',
+            success: function (data) {
+                // Render the partial view in the container
+                $('#followed-posts-partial-container').html(data);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
+     // Attach a click event handler to show the home post items again and hide the partial
+    $('.show-home-posts-button').click(function () {
+        // Show the home post items
+        $('.home-posts-content').show();
+
+        // Hide the partial view
+        $('#followed-posts-partial-container').empty();
+    });
+    });
+
+
+
+    $(document).ready(function () {
+        $(".show-comments-button").click(function () {
+            var postId = $(this).data("postid");
+            openCommentPostForm(postId);
+        });
+
+        $("body").on("submit", ".comment-form", function (e) {
+            e.preventDefault();
+            var postId = $(this).find("input[name='postId']").val();
+            submitCommentForm(postId);
+        });
+
+        function openCommentPostForm(postId) {
+            var commentPostContainer = $("#comment-post-container-" + postId);
+            var url = "/Posts/CreateComment?postId=" + postId;
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (response) {
+                    commentPostContainer.html(response);
+                    commentPostContainer.show();
+                    showComments(postId);
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        function showComments(postId) {
+            var commentSection = $("#comment-section-container-" + postId);
+
+            if (commentSection.is(":visible")) {
+                commentSection.hide();
+                $("#comment-post-container-" + postId).hide();
+            } else {
+                var url = "/Posts/GetCommentsForPost?postId=" + postId;
+
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    success: function (response) {
+                        commentSection.html(response);
+                        commentSection.show();
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            }
+        }
+
+        function submitCommentForm(postId) {
+            var commentForm = $(".comment-post-container[data-postid='" + postId + "'] .comment-form");
+            var formData = commentForm.serialize();
+
+            $.ajax({
+                url: "/Posts/CreateComment",
+                type: "POST",
+                data: formData,
+                success: function (response) {
+                    showComments(postId);
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+    });
+
+
+
+      // Fetch suggested users from the server
+    function fetchSuggestedUsers() {
+        // Make an AJAX request to get the suggested users
+        $.ajax({
+            url: '/Posts/GetSuggestedUsers', // Adjust the URL if needed
+            method: 'GET',
+            success: function (data) {
+                // Render the partial view with the suggested users
+                $('#popular-users').html(data);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    // Call the fetchSuggestedUsers function to load the suggested users on page load
+    fetchSuggestedUsers();
+
+
+
+
+
+</script>

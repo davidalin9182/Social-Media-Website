@@ -1,0 +1,66 @@
+﻿
+@using Social_Media_Website.ViewModels
+
+@model SugestedUsersViewModel
+
+
+@if (User.Identity.IsAuthenticated) {
+
+
+@foreach (var item in Model.SuggestedUsers)
+{
+    @if (item.UserName != User.Identity.Name)
+    {
+    <div class="sugestions-item">
+        @if (item.ProfileImageUrl == null)
+        {
+            <img src="/images/default_avatar.png" />
+        }
+        else
+        {
+            <img src="@item.ProfileImageUrl" />
+        }
+
+        <div class="sugestions-item-name">
+            <h3>@item.UserName</h3>
+            <h5>@item.Email</h5>
+        </div>
+        <div type="button" class="sugestions-follow-button">
+             <a asp-controller="User" asp-action="Detail" asp-route-id="@item.Id">View</a>
+        </div>
+        </div>
+    }
+ 
+}
+
+}
+else
+{
+
+    @foreach (var item in Model.SuggestedUsers)
+    {
+        
+            <div class="sugestions-item">
+                @if (item.ProfileImageUrl == null)
+                {
+                    <img src="/images/default_avatar.png" />
+                }
+                else
+                {
+                    <img src="@item.ProfileImageUrl" />
+                }
+
+                <div class="sugestions-item-name">
+                    <h3>@item.UserName</h3>
+                    <h5>@item.Email</h5>
+                </div>
+                <div type="button" class="sugestions-follow-button">
+                <a asp-controller="Account" asp-action="Login">View</a>
+
+                </div>
+            </div>
+        
+
+    }
+
+}

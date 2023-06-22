@@ -1,0 +1,99 @@
+﻿    @using Social_Media_Website.Models
+@using Social_Media_Website.ViewModels
+@using X.PagedList
+
+@model List<CommentViewModel>
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>FollowBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+@foreach (var item in Model)
+{
+    <div id="comment-@item.Id" class="comment-post-item">
+        @if (item.ProfileImageUrl != null)
+        {
+            <a type="button"><img class="post-profile-image" src="@item.ProfileImageUrl" /></a>
+        }
+        else
+        {
+
+            <a type="button"> <img src="/images/default_avatar.png" alt=" "></a>
+                       
+        }
+        <div class="comment-main">
+
+            <div class="comment-top-bar">
+              
+             
+                <a type="button">@item.UserName</a>
+                <div class="comment-email-date">
+
+                    <h5>. @item.DateCreated.ToString("MMMM dd - HH:mm tt")</h5>
+                 
+                    
+                </div>
+                @if (item.AppUser.UserName == User.Identity.Name || User.IsInRole("admin"))
+                {
+                     <div class="comment-edit-delete">
+                 
+                            <form action="/Posts/DeleteComment/@item.Id" method="post">
+                                <button type="submit" >
+                                     <p>Remove</p>
+                                </button>
+                            </form>              
+                     </div>
+                }
+
+            </div>
+            <p>
+                @Html.Raw(item.CommentContent)
+               @* @item.CommentContent*@
+            </p>
+             <div class="reply-button">
+                <button type="button" class="btn btn-sm btn-outline-info reply-comment-button" data-comment-username="@item.UserName" data-comment-id="@item.Id">
+                        Reply
+                    </button>
+                </div>
+
+            
+        </div>
+            
+    </div>
+}
+<div id="edit-comment-container" class="edit-comment-modal-content">
+    <!-- This container will hold the content of the edit comment form partial view -->
+</div>
+
+<div id="delete-comment-container" class="edit-comment-modal-content">
+    <!-- This container will hold the content of the delete comment form partial view -->
+</div>
+
+<script>
+
+   
+
+            $(document).ready(function () {
+            // Handle the click event of the reply comment button
+            $(".reply-comment-button").click(function () {
+                // Get the comment author's username from the data attribute
+                var commentUsername = $(this).data("comment-username");
+
+                // Set the comment author's username in the comment form
+                $("#commentContent").val("@@" + commentUsername);
+
+                // Scroll to the comment form
+                window.scrollTo({
+                    top: $("#commentForm").offset().top,
+                    behavior: "smooth"
+                });
+            });
+        });
+
+</script>

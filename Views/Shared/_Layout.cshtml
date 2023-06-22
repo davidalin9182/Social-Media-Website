@@ -1,0 +1,229 @@
+﻿
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Social_Media_Website</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/animate.css" />
+    <link rel="stylesheet" href="~/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/responsive.css" />
+    <link rel="stylesheet" href="~/css/slick.css" />
+    <link rel="stylesheet" href="~/css/slick-theme.css" />
+    @using Microsoft.AspNetCore.Identity
+    @using Social_Media_Website.Models
+    @using Social_Media_Website.ViewModels
+    @inject SignInManager<AppUser> SignInManager
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel/slick/slick.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.5.0/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+
+
+  
+</head>
+<body >
+
+ <div class="main-wrapper">
+  
+    <div class="main-body-container">
+            <header class="header-wrapper">
+
+                    <nav class="main-navbar">
+                        <ul class="">
+                                <li type="button" class="nav-item"><a class="nav-item " asp-area="" asp-controller="Posts" asp-action="Index"><img class="logo" src="/images/followbook_logo.png" alt=" "></a></li>
+                                <li type="button" class="nav-item"> <a class="nav-item " asp-area="" asp-controller="Posts" asp-action="Index"><img src="/images/home_icon.png" class="nav-item-icon" /> <p>Home</p></a></li>
+                                <li type="button" class="nav-item"> <a class="nav-item " asp-area="" asp-controller="About" asp-action="Index"><img src="/images/about_us_icon.png" class="nav-item-icon" /> <p>About</p></a></li>
+
+
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-item"><a class="nav-item" type="button" id="create-mail-button"><img src="/images/conctact_us_icon.png" class="nav-item-icon" /> <p>Contact Us</p></a></li>
+                                <li class="nav-item"> <a type="button" class="nav-item" asp-area="" asp-controller="User" asp-action="Index"><img src="/images/users_icon.png" class="nav-item-icon" /> <p>Users</p></a></li>
+                                <li class="nav-item"> <a type="button" class="nav-item" asp-area="" asp-controller="Conversation" asp-action="Index"><img src="/images/conversations_icon.png" class="nav-item-icon" /> <p>Messages</p></a></li>
+                                <li class="nav-item"> <a type="button" class="nav-item" asp-area="" asp-controller="Friend" asp-action="Index"><img src="/images/friends_icon.png" class="nav-item-icon" /> <p>Followed Users</p></a></li>
+                                <li class="nav-item"> <a type="button" class="nav-item" asp-area="" asp-controller="Profile" asp-action="Index"><img src="/images/profile_icon.png" class="nav-item-icon" /><p> @User.Identity.Name</p> </a></li>
+                                <li class="nav-item"> <a type="button" class="nav-item" asp-area="" asp-controller="Account" asp-action="Logout"><img src="/images/logout_icon.png" class="nav-item-icon" /> <p>Logout</p></a></li>
+                                <li class="nav-item-button"><button type="button" id="create-post-button">Post</button></li>
+                            }
+                            else
+                            {
+                            <li type="button" class="nav-item"> <a class="nav-item " asp-area="" asp-controller="Account" asp-action="Login"><img src="/images/login_icon.png" class="nav-item-icon" /> <p>Login</p></a></li>
+                           
+                            }
+                        </ul>
+                    </nav>
+
+            </header>
+            <div class="main-body-render">
+                <div class="create-post-modal-content" id="create-post-container"></div>
+                 <div class="create-post-modal-content" id="create-mail-container"></div>
+                <div class="post-modal-overlay"></div>
+               
+                @RenderBody()
+            </div>
+           
+        
+    </div>
+
+
+    <footer class="border-top footer text-muted">
+        <div class="footy-sec mn no-margin">
+            <div class="footer-nav">
+                <span>
+                    <p>&#64 Copyright 2023 - Caldararu David</p>
+                </span>
+                <ul>
+
+                    <li><a asp-area="" asp-controller="Posts" asp-action="Index">Home</a></li>
+                    <li><a asp-area="" asp-controller="About" asp-action="Index">About</a></li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li><a asp-area="" asp-controller="Users" asp-action="Index">Users</a></li>
+                        <li><a asp-area="" asp-controller="About" asp-action="Contact">Help</a></li>
+                    }
+                    </ul>
+            </div>
+        </div>
+    </footer>
+
+ </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+<script>
+
+    //Post
+
+    $(document).ready(function () {
+        // Get a reference to the create post container element
+        var createPostContainer = $("#create-post-container");
+
+        // Get a reference to the create post button
+        var createPostButton = $("#create-post-button");
+
+        // Get a reference to the modal overlay
+        var modalOverlay = $(".post-modal-overlay");
+
+        // Function to open the create post form
+        function openCreatePostForm() {
+            // Show the modal overlay
+            modalOverlay.show();
+
+            // Make an AJAX request to fetch the create post form content (partial view)
+            $.ajax({
+                url: "/Posts/Create",
+                type: "GET",
+                success: function (response) {
+                    // Replace the content of the create post container with the partial view HTML
+                    createPostContainer.html(response);
+
+                    // Show the create post container
+                    createPostContainer.show();
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        // Function to close the create post form
+        function closeCreatePostForm() {
+            // Hide the create post container
+            createPostContainer.hide();
+
+            // Hide the modal overlay
+            modalOverlay.hide();
+        }
+
+        // Handle the click event of the create post button
+        createPostButton.click(function () {
+            openCreatePostForm();
+        });
+
+        // Handle the click event of the modal overlay
+        modalOverlay.click(function (e) {
+            // Check if the click event target is the modal overlay itself (not its children)
+            if (e.target === this) {
+                closeCreatePostForm();
+            }
+        });
+
+        // Handle the click event of the close button
+        createPostContainer.on("click", ".close", function () {
+            closeCreatePostForm();
+        });
+    });
+
+
+    //Mail
+
+    $(document).ready(function () {
+  // Get a reference to the create mail container element
+  var createMailContainer = $("#create-mail-container");
+
+  // Get a reference to the create mail button
+  var createMailButton = $("#create-mail-button");
+
+  // Get a reference to the modal overlay
+  var modalOverlay = $(".post-modal-overlay");
+
+  // Function to open the create mail form
+  function openCreateMailForm() {
+    // Show the modal overlay
+    modalOverlay.show();
+
+    // Make an AJAX request to fetch the create mail form content (partial view)
+    $.ajax({
+      url: "/About/CreateMail",
+      type: "GET",
+      success: function (response) {
+        // Replace the content of the create mail container with the partial view HTML
+        createMailContainer.html(response);
+
+        // Show the create mail container
+        createMailContainer.show();
+      },
+      error: function (xhr, status, error) {
+        console.log(error);
+      }
+    });
+  }
+
+  // Function to close the create mail form
+  function closeCreateMailForm() {
+    // Hide the create mail container
+    createMailContainer.hide();
+
+    // Hide the modal overlay
+    modalOverlay.hide();
+  }
+
+  // Handle the click event of the create mail button
+  createMailButton.click(function () {
+    openCreateMailForm();
+  });
+
+  // Handle the click event of the modal overlay
+  modalOverlay.click(function (e) {
+    // Check if the click event target is the modal overlay itself (not its children)
+    if (e.target === this) {
+      closeCreateMailForm();
+    }
+  });
+
+  // Handle the click event of the close button
+  createMailContainer.on("click", ".close", function () {
+    closeCreateMailForm();
+  });
+});
+
+</script>

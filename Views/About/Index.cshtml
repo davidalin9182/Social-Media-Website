@@ -1,0 +1,209 @@
+﻿
+
+<head>
+	<meta charset="UTF-8">
+	@*<title>FollowBook</title>*@
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<link rel="stylesheet" href="~/css/site.css" />
+	@{
+		ViewBag.Title = "Page About";
+		ViewBag.HideFooter = true;
+	}
+
+</head>
+
+
+
+<section class="Company-overview">
+	<div class="about-us-wrapper">
+	
+
+
+	<div class="row">
+
+
+			<div class="wrap-content-bottom">
+				<div class="about-main">
+
+
+					<h3 class="h2-about">Website Guide:</h3>
+					<hr>
+					<div class="about-main-content">
+						<div class="prev-button-div">
+							<button class="prev-btn" aria-label="Previous" type="button"><span class="arrow-left"></span></button>
+						</div>
+						<div class="slider-container">
+							<div class="slider-wrapper">
+								<div class="slider-item">
+
+									<img src="/images/guide_ss_11.png" alt="">
+
+								</div>
+								<div class="slider-item">
+
+									<img src="/images/guide_ss_12.png" alt="">
+
+								</div>
+								<div class="slider-item">
+
+									<img src="/images/guide_ss_8.png" alt="">
+
+								</div>
+
+								<div class="slider-item">
+
+									<img src="/images/guide_ss_13.png" alt="">
+
+								</div>
+								<div class="slider-item">
+
+									<img src="/images/guide_ss_2.png" alt="">
+
+								</div>
+								<div class="slider-item">
+
+									<img src="/images/guide_ss_3.png" alt="">
+
+								</div>
+								<div class="slider-item">
+
+									<img src="/images/guide_ss_1.png" alt="">
+
+								</div>
+								<div class="slider-item">
+
+									<img src="/images/guide_ss_4.png" alt="">
+
+								</div>
+								<div class="slider-item">
+
+									<img src="/images/guide_ss_5.png" alt="">
+
+								</div>
+								<div class="slider-item">
+
+									<img src="/images/guide_ss_10.png" alt="">
+
+								</div>
+								<div class="slider-item">
+
+									<img src="/images/guide_ss_6.png" alt="">
+
+								</div>
+								<div class="slider-item">
+
+									<img src="/images/guide_ss_7.png" alt="">
+
+								</div>
+								<div class="slider-item">
+
+									<img src="/images/guide_ss_9.png" alt="">
+
+								</div>
+
+
+
+							</div>
+						</div>
+						<div class="next-button-div">
+							<button class="next-btn" aria-label="Next" type="button"><span class="arrow-right"></span></button>
+						</div>
+					</div>
+					<div class="post-st-about">
+						<h3 class="h2-about">Our goals:</h3>
+						<hr>
+						<ul>
+							<li>
+								<p>
+									Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean felis massa, commodo sed fringilla id, dignissim ut eros.
+									Aliquam at lacinia diam, eget scelerisque massa. Nunc ut porta ante. Praesent blandit, neque nec hendrerit luctus, sem urna
+									imperdiet ligula, eu egestas purus massa dictum arcu. Integer cursus enim nec magna dapibus laoreet. Donec egestas fringilla
+									risus quis volutpat.
+								</p>
+							</li>
+							<li>
+								<p>
+									Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean felis massa, commodo sed fringilla id, dignissim ut eros.
+									Aliquam at lacinia diam, eget scelerisque massa. Nunc ut porta ante. Praesent blandit, neque nec hendrerit luctus, sem urna
+									imperdiet ligula, eu egestas purus massa dictum arcu. Integer cursus enim nec magna dapibus laoreet. Donec egestas fringilla
+									risus quis volutpat.
+								</p>
+							</li>
+							<li>
+								<p>
+									Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean felis massa, commodo sed fringilla id, dignissim ut eros.
+									Aliquam at lacinia diam, eget scelerisque massa. Nunc ut porta ante. Praesent blandit, neque nec hendrerit luctus, sem urna
+									imperdiet ligula, eu egestas purus massa dictum arcu. Integer cursus enim nec magna dapibus laoreet. Donec egestas fringilla
+									risus quis volutpat.
+								</p>
+							</li>
+							<li>
+								<p>
+									Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean felis massa, commodo sed fringilla id, dignissim ut eros.
+									Aliquam at lacinia diam, eget scelerisque massa. Nunc ut porta ante. Praesent blandit, neque nec hendrerit luctus, sem urna
+									imperdiet ligula, eu egestas purus massa dictum arcu. Integer cursus enim nec magna dapibus laoreet. Donec egestas fringilla
+									risus quis volutpat.
+								</p>
+							</li>
+						</ul>
+						<p>
+
+						</p>
+
+					</div>
+
+					<h3 class="h2-about">Video guide:</h3>
+					<hr>
+					<video width="640" height="360" controls>
+						<source src="/videos/show_website_video2.mp4" type="video/mp4">
+						Your browser does not support the video tag.
+					</video>
+			
+
+				</div>
+
+			</div>
+
+
+			<div class="col-md-6 col-sm-12">
+				<img src="images/about3.png" alt="">
+			</div>
+		</div>
+	</div>
+</section>
+
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const sliderWrapper = document.querySelector('.slider-wrapper');
+		const prevBtn = document.querySelector('.prev-btn');
+		const nextBtn = document.querySelector('.next-btn');
+		const imageWidth = sliderWrapper.querySelector('.slider-item').clientWidth;
+		const imagesPerSlide = 1;
+		const tilesCount = sliderWrapper.querySelectorAll('.slider-item').length;
+		const lastTile = tilesCount - 2; // set last tile index
+		let currentTile = 0;
+
+		prevBtn.addEventListener('click', () => {
+			if (currentTile > 0) {
+				currentTile = (currentTile - 1) % tilesCount;
+			} else {
+				currentTile = lastTile;
+			}
+			sliderWrapper.style.left = -currentTile * imageWidth + 'px';
+		});
+
+		nextBtn.addEventListener('click', () => {
+			if (currentTile < lastTile) {
+				currentTile = (currentTile + 1) % tilesCount;
+			} else {
+				currentTile = 0;
+			}
+			sliderWrapper.style.left = -currentTile * imageWidth + 'px';
+		});
+	});
+
+
+</script>

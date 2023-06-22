@@ -1,0 +1,217 @@
+﻿@using Social_Media_Website.ViewModels
+@using Social_Media_Website.Models
+@using System.Security.Claims
+
+@model ConversationMessagesViewModel
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>FollowBook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+
+
+<div class=" messages col-lg-8 col-md-12 pd-right-none pd-left-none " data-conversation-id="@Model.ConversationId">
+    <div class="main-conversation-box">
+        <div class="message-bar-head">
+            <div class="coversation-starting-message">
+            </div>
+
+            <div class="usr-msg-details">
+  
+                <div class="usr-mg-info">
+
+                    @if (Model.User2.UserName != User.Identity.Name)
+                    {
+                        <h3>@Model.User2.UserName</h3>
+                    }
+                    else
+                    {
+                        <h3>@Model.User1Name</h3>
+                    }
+
+
+                </div>
+            </div>
+            <button type="button" class="exit-button" data-conversation-id="@Model.ConversationId"><i class="fa-solid fa-circle-xmark" style="color: #3753A2;"></i></button>
+
+        </div>
+
+        <div class="messages-line message-line-overflow1">
+            <div class="message-line-padding">
+
+            </div>
+            @if (Model.Messages != null && Model.Messages.Any())
+            {
+                @foreach (var message in Model.Messages)
+                {
+                    if (Model.CurrentUser.Id == Model.User1Id)
+                    {
+                        if (message.SenderId == Model.CurrentUser.Id)
+                        {
+                            <div class="main-message-box ta-right">
+                                <div class="message-dt">
+                                    <span>@message.SentAt.ToShortTimeString()</span>
+                                    <div class="message-inner-dt">
+                                        <p>@message.Content</p>
+                                    </div>
+                                </div>
+                                <div class="messg-usr-img">
+                                    <img src="@Model.User1ProfileImageUrl" alt="">
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="main-message-box st3">
+                                <div class="message-dt st3">
+                                    <span>@message.SentAt.ToShortTimeString()</span>
+                                    <div class="message-inner-dt">
+                                        <p>@message.Content</p>
+                                    </div>
+                                </div>
+                                <div class="messg-usr-img">
+                                    <img src="@Model.User2ProfileImageUrl" alt="">
+                                </div>
+                            </div>
+                        }
+                    }
+                    else if (Model.CurrentUser.Id == Model.User2Id)
+                    {
+                        if (message.SenderId == Model.CurrentUser.Id)
+                        {
+                            <div class="main-message-box ta-right">
+                                <div class="message-dt">
+                                    <span>@message.SentAt.ToShortTimeString()</span>
+                                    <div class="message-inner-dt">
+                                        <p>@message.Content</p>
+                                    </div>
+                                </div>
+                                <div class="messg-usr-img">
+                                    <img src="@Model.User2ProfileImageUrl" alt="">
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="main-message-box st3">
+                                <div class="message-dt st3">
+                                    <span>@message.SentAt.ToShortTimeString()</span>
+                                    <div class="message-inner-dt">
+                                        <p>@message.Content</p>
+                                    </div>
+                                </div>
+                                <div class="messg-usr-img">
+                                    <img src="@Model.User1ProfileImageUrl" alt="">
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="main-message-box st3">
+                            <div class="message-dt st3">
+                                <span>@message.SentAt.ToShortTimeString()</span>
+                                <div class="message-inner-dt">
+                                    <p>@message.Content</p>
+                                </div>
+                            </div>
+                            <div class="messg-usr-img">
+                                <img src="@(message.SenderName == Model.User1Name ? Model.User1ProfileImageUrl : (message.SenderName == Model.User2Name ? Model.User2ProfileImageUrl : ""))" alt="">
+                            </div>
+                        </div>
+                    }
+                }
+
+            }
+        </div>
+        <div class="message-send-area">
+           
+            <form id="sendMessageForm" asp-controller="Conversation" asp-action="SendMessage" data-conversation-id="@Model.ConversationId">
+                <input type="hidden" name="conversationId" value="@Model.ConversationId" />
+                <div class="mf-field">
+                    <input type="text" name="content" placeholder="Enter message" required />
+                    <button type="submit">Send</button>
+                </div>
+                <ul>
+                    
+                </ul>
+            </form>
+           
+
+        </div>
+      
+
+    </div>
+</div>
+
+
+
+
+
+
+
+<script>
+
+
+    $(function () {
+        $('#sendMessageForm').submit(function (event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+
+            // Get the form data
+            var formData = $(this).serialize();
+
+            // Send an AJAX request to the server to submit the form data
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: formData,
+
+                success: function (data) {
+                    // Clear the input field
+                    $('#sendMessageForm input[name="content"]').val('');
+
+                    // Show the new message in the conversation
+                    var conversationId = $('#sendMessageForm').data('conversation-id');
+                    var messageHtml = '<div class="main-message-box ta-right">' +
+                        '<div class="message-dt">' +
+                        '<div class="message-inner-dt">' +
+                        '<p>' + data.content + '</p>' +
+                        '</div>' +
+                        '<span>' + data.sentAt + '</span>' +
+                        '</div>' +
+                        '<div class="messg-usr-img">' +
+                        '<img src="' + data.senderProfileImage + '" alt="">' +
+                        '</div>' +
+                        '</div>';
+                    $('.messages[data-conversation-id="' + conversationId + '"] .messages-line').append(messageHtml);
+
+                    // Use pushState to update the URL without refreshing the page
+                    var newUrl = $(this).attr('action');
+                    window.history.pushState('', '', newUrl);
+                }
+            });
+        });
+    });
+
+
+    $(document).on('click', '.exit-button', function () {
+        var conversationId = $(this).data('conversation-id');
+        var chatWindow = $('.messages[data-conversation-id="' + conversationId + '"]');
+        chatWindow.css('opacity', '0');
+        setTimeout(function () {
+            chatWindow.remove();
+            window.location.replace(window.location.href);
+        }, 500); // Wait for the animation to complete before removing the chat window and reloading the page
+        $('.load-conversation-btn').removeClass('conversation-opened');
+    });
+
+
+
+</script>
