@@ -5,7 +5,8 @@
 ## Login Page: 
 ### Here users can login into an existing account to gain acces to all the website features.
 ![guide_ss_11](https://github.com/davidalin9182/Social-Media-Website/assets/104305802/91b21a52-c3ec-4ee9-9c97-a0b0c25d3a2f)
-## Profile Page: Where users can view their posts and personal details and modify them.
+## Profile Page: 
+### Where users can view their posts and personal details and modify them.
 ![guide_ss_1](https://github.com/davidalin9182/Social-Media-Website/assets/104305802/927325b2-c3a5-4938-be80-29313b6a23fa)
 ## Form for changeing user account details:
 ![guide_ss_4](https://github.com/davidalin9182/Social-Media-Website/assets/104305802/8400ba92-b4a2-4c3d-ba71-36dde1a94601)
