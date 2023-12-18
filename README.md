@@ -1,5 +1,5 @@
 # Social-Media-Website
-## Regitser Page:
+## Register Page:
 ### Here uses can create new accounts.
 ![guide_ss_12](https://github.com/davidalin9182/Social-Media-Website/assets/104305802/52abb9e6-a1cc-44e7-ba11-dd3860ebbd75)
 ## Login Page: 
